@@ -10,13 +10,13 @@ Movement Cost for Terrain:
  # Non-walkable:
     N/A = Water (~)
 
-  Walkable:
+ # Walkable:
 
     1 = Flatlands (. or @ or X)
     2 = Forest (*)
     3 = Mountain (^)
 
-Test Map:
+# Test Map:
 
   @*^^^   
   ~~*~.    
@@ -27,7 +27,7 @@ Test Map:
  @ = User start
 X = The goal tile
 
-Test Map Solution:
+# Test Map Solution:
  # = Best path
   ##^^^
   ~~#~.
