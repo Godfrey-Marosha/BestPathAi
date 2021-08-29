@@ -10,9 +10,14 @@ import java.util.Map;
 public class MainController {
 
     public static void main(String[] args) {
+        HashMap<String, Integer> materialCostMap =  Material.getMaterialWeight();
+
+
+
         Map<Integer, ArrayList<String>>  map = printAll();
 
-        workOutPath(map);
+        workOutPath(materialCostMap, map);
+
         /*String[][] rawMap = getMap();
 
         if (rawMap == null){
@@ -28,14 +33,121 @@ public class MainController {
         }*/
     }
 
-    public static void workOutPath(Map<Integer, ArrayList<String>>  map){
-        for (int key : map.keySet()) {
-            System.out.println(key);
+    public static void workOutPath(HashMap<String, Integer> materialCostMap, Map<Integer, ArrayList<String>>  map){
+        int rowSize = map.size();
+        int colSize = map.get(1).size();
+
+        ArrayList<String> currentRow = null;
+        ArrayList<String> nextRow = null;
+
+        int totalCost = 0;
+        int score = 0;
+
+        int cursorCol = 0;
+        int cursorRow = 0;
+
+        int nextCursor = 0;
+        int cursorX = 0;
+        int cursorY = 0;
+
+        int nextCost = 0;
+        int adjacentCost = 0;
+
+        int rowCursor = 0;
+        int colCursor = 0;
+        String previousCell = "";
+        String currentCell = "";
+        String nextCell = "";
+        String adjacentCell = "";
+
+        for (int row = 0; row < rowSize; row++) {
+            currentRow = map.get(row);
+
+            for (int col = 0; col < currentRow.size(); col++) {
+                if (row == 0 && col == 0){
+                    cursorCol = col;
+                    cursorRow = row;
+
+                    currentCell = map.get(cursorRow).get(cursorCol);
+                }
+
+                // Get Previous cell
+                if (cursorCol - 1 < 0){
+                    previousCell = map.get(cursorRow).get(cursorCol);
+                }
+                else{
+                    previousCell = map.get(cursorRow).get(cursorCol - 1);
+                }
+
+                // Get next row
+                if (cursorRow + 1 == rowSize){
+                    nextRow = map.get(cursorRow);
+                }
+                else{
+                    nextRow = map.get(cursorRow + 1);
+                }
+
+                // Get next cell
+                if (cursorCol + 1 == currentRow.size()){
+                    nextCell = currentRow.get(cursorCol);
+                }
+                else{
+                    nextCell = currentRow.get(cursorCol + 1);
+                }
+
+                // Get adjacent cell
+                adjacentCell = nextRow.get(cursorCol);
+
+                nextCost     = (!Material.isWater(nextCell)) ? getMaterialWeight(materialCostMap, nextCell) : 0;
+                adjacentCost = (!Material.isWater(adjacentCell)) ? getMaterialWeight(materialCostMap, adjacentCell) : 0;
+
+                if (!(Material.isWater(nextCell) && Material.isWater(adjacentCell))){
+                    if (nextCost < adjacentCost){
+                        totalCost += nextCost;
+
+                        cursorX = nextCursor;
+                    }
+                    else if (nextCost > adjacentCost){
+                        totalCost += adjacentCost;
+                        cursorX = col;
+                    }
+                    else{
+                        totalCost += adjacentCost;
+                    }
+                }
+
+
+
+
+                if (!nextCell.equals(Material.MATERIAL_WATER)){
+                    System.out.println("Previous: " + previousCell + " {"  + getMaterialWeight(materialCostMap,previousCell ) + "} " +
+                            "Current: "  + currentCell + " {"  + getMaterialWeight(materialCostMap,currentCell) + "} " +
+                            " Next: "    + nextCell    + " {"  + getMaterialWeight(materialCostMap,nextCell) + "} " +
+                            " Adjacent: "  + adjacentCell + " {"  + getMaterialWeight(materialCostMap,adjacentCell) + "} " +
+                            "=> (" + cursorX + ";" + cursorY + ") ### " + totalCost);
+                }
+
+            }
+
+
+
+            //System.out.println(nextRow);
         }
+
+    }
+
+
+    public static int getMaterialWeight(HashMap<String, Integer> materialCostMap, String materialSymbol){
+        if (materialCostMap.containsKey(materialSymbol))
+            return materialCostMap.get(materialSymbol.trim());
+        else
+            return 0;
     }
 
     public static Map<Integer, ArrayList<String>> printAll(){
-        String rawMapText = extractMapData();
+        String rawMapText = extractMapData().trim();
+
+        int colSize = rawMapText.indexOf("\n");
 
         rawMapText = rawMapText.replace("\n", "");
 
@@ -53,7 +165,7 @@ public class MainController {
                 //System.out.println();
             }
 
-            if ((i + 1) % 50 == 0){
+            if ((i + 1) % colSize == 0){
                 rowList.put(rowCount, colList);
                 colList = new ArrayList();
                 //System.out.println();
@@ -97,7 +209,7 @@ public class MainController {
             return finalMap;
             *//*for (char c: charArr){
                 System.out.print(c);
-            }
+            }*//*
         }
     }
     */
